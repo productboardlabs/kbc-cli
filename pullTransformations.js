@@ -27,20 +27,31 @@ const pullTransformations = async () => {
 
 const writeToFiles = bucketsWithTransformations => {
   bucketsWithTransformations.forEach(bucket => {
-    const dirName = bucket.name.replace(/\//g, "");
+    const bucketDir = bucket.name.replace(/\//g, "");
 
-    if (!fs.existsSync(dirName)) {
-      fs.mkdirSync(dirName);
+    if (!fs.existsSync(bucketDir)) {
+      fs.mkdirSync(bucketDir);
     }
 
     bucket.rows.forEach(transformation => {
-      fs.writeFileSync(
-        `${dirName}/${transformation.name.replace(/\//g, "")}.json`,
-        JSON.stringify(transformation)
-      );
+      const transformationDir = transformation.name.replace(/\//g, "");
+
+      if (!fs.existsSync(`${bucketDir}/${transformationDir}`)) {
+        fs.mkdirSync(`${bucketDir}/${transformationDir}`);
+      }
 
       fs.writeFileSync(
-        `${dirName}/${transformation.name.replace(/\//g, "")}.sql`,
+        `${bucketDir}/${transformationDir}/config.json`,
+        JSON.stringify(transformation, null, 2)
+      );
+
+      let codeFile = "queries.sql";
+      if (transformation.configuration.type === "python") {
+        codeFile = "script.py";
+      }
+
+      fs.writeFileSync(
+        `${bucketDir}/${transformationDir}/${codeFile}`,
         transformation.configuration.queries.join()
       );
     });
