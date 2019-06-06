@@ -16,8 +16,12 @@ program
   .command("push")
   .description("push transformation to Keboola")
   .option("-p, --path <path>", "path to transformation")
+  .option("-v, --verbose")
   .action(options => {
-    console.log(options.path);
+    commands
+      .push(options.path)
+      .then(response => options.verbose && console.log(response))
+      .catch(error => console.error(error));
   });
 
 program
