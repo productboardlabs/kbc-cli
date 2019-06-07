@@ -2,8 +2,9 @@
 
 const program = require("commander");
 const commands = require("./commands");
+var version = require("./package.json").version;
 
-program.version("0.0.1");
+program.version(version);
 
 program
   .command("pull")
