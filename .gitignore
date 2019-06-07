@@ -1,11 +1,2 @@
-# env variables and secrets
-.env
-
 # js
 node_modules
-
-# transformations
-keboola-transformations
-
-# OS X
-.DS_Store

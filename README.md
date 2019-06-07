@@ -1,11 +1,11 @@
-## PB Keboola tooling
+## kbc-cli
 
-#### Pull transformations and write them to files
+> command line interface for [Keboola Connection (KBC)](https://developers.keboola.com/)
+
+## Quick Start
 
 ```
-cp .env.example .env
-vim .env # fill in secrets
-cd $REPO
-npm install
-node pullTransformations.js
+npm i productboard/kbc-cli -g
+export KEBOOLA_TOKEN='token that enables to access KBC'
+kbc-cli --help
 ```
