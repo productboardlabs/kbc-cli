@@ -9,6 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bin": "./cli.js",
   "dependencies": {
     "commander": "^2.20.0",
     "node-fetch": "^2.6.0"

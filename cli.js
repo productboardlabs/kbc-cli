@@ -47,7 +47,9 @@ program
     console.log(options.path);
   });
 
-if (process.argv.length == 2) {
+program.parse(process.argv);
+
+if (!program.args.length) {
   program.help();
   process.exit();
 }
@@ -56,5 +58,3 @@ if (process.env["KEBOOLA_TOKEN"] === undefined) {
   console.error("$KEBOOLA_TOKEN environment variable is not set");
   process.exit(1);
 }
-
-program.parse(process.argv);
