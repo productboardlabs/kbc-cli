@@ -1,6 +1,11 @@
 const program = require("commander");
 const commands = require("./commands");
 
+if (process.env["KEBOOLA_TOKEN"] === undefined) {
+  console.error("$KEBOOLA_TOKEN environment variable is not set");
+  process.exit(1);
+}
+
 program.version("0.0.1");
 
 program
