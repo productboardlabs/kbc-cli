@@ -3,6 +3,8 @@ const defaults = require("../lib/defaults");
 const keboolaHttpApi = require("../lib/keboolaHttpApi");
 
 const writeToFiles = bucketsWithTransformations => {
+  let transformationCount = 0;
+
   bucketsWithTransformations.forEach(bucketConfig => {
     const bucketDir = bucketConfig.name.replace(/\//g, "");
 
@@ -11,6 +13,7 @@ const writeToFiles = bucketsWithTransformations => {
     }
 
     bucketConfig.rows.forEach(transformation => {
+      transformationCount++;
       const transformationDir = transformation.name.replace(/\//g, "");
 
       if (!fs.existsSync(`${bucketDir}/${transformationDir}`)) {
@@ -41,9 +44,11 @@ const writeToFiles = bucketsWithTransformations => {
       JSON.stringify(bucketConfig, null, 2)
     );
   });
+
+  return transformationCount;
 };
 
-const pull = (outDir = defaults.outDir) => {
+const pull = (outDir = "./transformations") => {
   if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir);
   }
@@ -51,8 +56,8 @@ const pull = (outDir = defaults.outDir) => {
   process.chdir(outDir);
 
   return keboolaHttpApi.pull().then(bucketsWithTransformations => {
-    console.log(`Written to ${outDir}`);
-    return writeToFiles(bucketsWithTransformations);
+    const transformationCount = writeToFiles(bucketsWithTransformations);
+    console.log(`${transformationCount} transformations written to ${outDir}.`);
   });
 };
 

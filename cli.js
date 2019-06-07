@@ -8,8 +8,8 @@ program.version(version);
 
 program
   .command("pull")
-  .description("pull all transformations from Keboola and store them locally")
-  .option("-o, --outDir <path>", "default is the current working directory")
+  .description("pull all transformations and store them locally")
+  .option("-o, --outDir <path>", "[default: transformations]")
   .option("-f, --force", "force to overwrite local files")
   .action(options => {
     commands.pull(options.outDir).catch(error => console.error(error));
