@@ -1,18 +1,18 @@
-const fetch = require("node-fetch");
-const keboolaUrl = require("./defaults").keboolaUrl;
+import * as fetch from "node-fetch";
+import { keboolaUrl } from "./defaults";
 
 const headers = {
   "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
   "X-Storageapi-Token": process.env["KEBOOLA_TOKEN"]
 };
 
-const pull = () =>
+export const pull = () =>
   fetch(keboolaUrl, {
     method: "GET",
     headers
   }).then(response => response.json());
 
-const push = (bucketId, transformation) =>
+export const push = (bucketId, transformation) =>
   fetch(`${keboolaUrl}/${bucketId}/rows/${transformation.id}`, {
     method: "PUT",
     headers,
@@ -22,8 +22,3 @@ const push = (bucketId, transformation) =>
       `Change Queries in ${transformation.name}`
     )}`
   }).then(response => response.json());
-
-module.exports = {
-  pull,
-  push
-};
