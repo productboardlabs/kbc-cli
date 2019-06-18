@@ -18,7 +18,7 @@ program
 program
   .command("push")
   .description("push transformation to Keboola")
-  .option("-p, --path <path>", "path to transformation")
+  .option("-p, --path [path]", "path to transformation")
   .option("-v, --verbose")
   .action(options => {
     commands
@@ -30,7 +30,6 @@ program
 program
   .command("inputs <ls|add|refresh|remove>")
   .description("manage input mappings")
-  .option("-p, --path <path>", "path to transformation")
   .option(
     "-c, --columns [column names...]",
     "Space separated list of column names"
@@ -42,7 +41,6 @@ program
 program
   .command("outputs <ls|add|remove>")
   .description("manage output mappings")
-  .option("-p, --path <path>", "path to transformation")
   .action(options => {
     console.log(options.path);
   });
