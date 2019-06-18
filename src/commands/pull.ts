@@ -45,7 +45,7 @@ export default class Pull extends Command {
 
         fs.writeFileSync(
           `${bucketDir}/${transformationDir}/${codeFile}`,
-          transformation.configuration.queries.join()
+          transformation.configuration.queries.join("\n")
         );
       });
 
