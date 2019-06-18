@@ -2,6 +2,7 @@
   "name": "kbc-cli",
   "version": "0.0.1",
   "author": "",
+  "repository": "github:productboard/kbc-cli",
   "bin": {
     "kbc-cli": "./bin/run"
   },
