@@ -21,15 +21,22 @@ export default class Push extends Command {
       fs.readFileSync("config.json").toString()
     );
 
-    let codeFile = "queries.sql";
-
-    if (transformation.configuration.type === "python") {
-      codeFile = "script.py";
+    if (transformation.configuration.type !== "simple") {
+      this.error("Only SQL scripts are currently supported.");
     }
 
-    const code = fs.readFileSync(codeFile).toString();
+    let codeFile = "queries.sql";
 
-    transformation.configuration.queries = [code];
+    const code = fs.readFileSync(codeFile).toString();
+    const codeAsArray = [];
+
+    const reg = /(.*?;)(?:\n)*/gs;
+    let match = null;
+    while ((match = reg.exec(code)) !== null) {
+      codeAsArray.push(match.pop());
+    }
+
+    transformation.configuration.queries = codeAsArray;
 
     const response = await push(bucketConfig.id, transformation);
 
