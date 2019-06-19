@@ -32,11 +32,6 @@ export default class Pull extends Command {
           fs.mkdirSync(`${bucketDir}/${transformationDir}`);
         }
 
-        fs.writeFileSync(
-          `${bucketDir}/${transformationDir}/config.json`,
-          JSON.stringify(transformation, null, 2)
-        );
-
         let codeFile = "queries.sql";
 
         if (transformation.configuration.type === "python") {
@@ -45,14 +40,21 @@ export default class Pull extends Command {
 
         fs.writeFileSync(
           `${bucketDir}/${transformationDir}/${codeFile}`,
-          transformation.configuration.queries.join("\n")
+          transformation.configuration.queries.join("\n\n")
+        );
+
+        delete transformation.configuration.queries;
+
+        fs.writeFileSync(
+          `${bucketDir}/${transformationDir}/.config`,
+          JSON.stringify(transformation, null, 2)
         );
       });
 
       delete bucketConfig.rows;
 
       fs.writeFileSync(
-        `${bucketDir}/config.json`,
+        `${bucketDir}/.config`,
         JSON.stringify(bucketConfig, null, 2)
       );
     });

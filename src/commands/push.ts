@@ -14,12 +14,8 @@ export default class Push extends Command {
   async run() {
     const { flags } = this.parse(Push);
 
-    const bucketConfig = JSON.parse(
-      fs.readFileSync("../config.json").toString()
-    );
-    const transformation = JSON.parse(
-      fs.readFileSync("config.json").toString()
-    );
+    const bucketConfig = JSON.parse(fs.readFileSync("../.config").toString());
+    const transformation = JSON.parse(fs.readFileSync(".config").toString());
 
     if (transformation.configuration.type !== "simple") {
       this.error("Only SQL scripts are currently supported.");
@@ -30,10 +26,10 @@ export default class Push extends Command {
     const code = fs.readFileSync(codeFile).toString();
     const codeAsArray = [];
 
-    const reg = /(.*?;)(?:\n)*/gs;
+    const reg = /(.*?;\n*)\n{2}/gs;
     let match = null;
-    while ((match = reg.exec(code)) !== null) {
-      codeAsArray.push(match.pop());
+    while ((match = reg.exec(code))) {
+      codeAsArray.push(match[1]);
     }
 
     transformation.configuration.queries = codeAsArray;
