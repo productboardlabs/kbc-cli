@@ -14,16 +14,18 @@ export default class Pull extends Command {
     })
   };
 
+  // @ts-ignore
   writeToFiles(bucketsWithTransformations) {
     let transformationCount = 0;
 
+    // @ts-ignore
     bucketsWithTransformations.forEach(bucketConfig => {
       const bucketDir = bucketConfig.name.replace(/\//g, "");
 
       if (!fs.existsSync(bucketDir)) {
         fs.mkdirSync(bucketDir);
       }
-
+      // @ts-ignore
       bucketConfig.rows.forEach(transformation => {
         transformationCount++;
         const transformationDir = transformation.name.replace(/\//g, "");
@@ -62,15 +64,17 @@ export default class Pull extends Command {
     return transformationCount;
   }
 
-  async run(outDir = "./transformations") {
+  async run() {
+    const { flags } = this.parse(Pull);
+    const outDir = flags.outDir || "./transformations";
+
     if (!fs.existsSync(outDir)) {
       fs.mkdirSync(outDir);
     }
 
     process.chdir(outDir);
 
-    const { flags } = this.parse(Pull);
-
+    // @ts-ignore
     await pull().then(bucketsWithTransformations => {
       const transformationCount = this.writeToFiles(bucketsWithTransformations);
       this.log(`${transformationCount} transformations written to ${outDir}.`);

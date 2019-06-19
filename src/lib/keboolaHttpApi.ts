@@ -7,12 +7,16 @@ const headers = {
 };
 
 export const pull = () =>
+  // @ts-ignore
   fetch(keboolaUrl, {
     method: "GET",
     headers
+    // @ts-ignore
   }).then(response => response.json());
 
+// @ts-ignore
 export const push = (bucketId, transformation) =>
+  // @ts-ignore
   fetch(`${keboolaUrl}/${bucketId}/rows/${transformation.id}`, {
     method: "PUT",
     headers,
@@ -21,4 +25,5 @@ export const push = (bucketId, transformation) =>
     )}&changeDescription=${encodeURIComponent(
       `Change Queries in ${transformation.name}`
     )}`
+    // @ts-ignore
   }).then(response => response.json());
