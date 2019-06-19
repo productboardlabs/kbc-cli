@@ -39,6 +39,11 @@
   "main": "lib/index.js",
   "oclif": {
     "commands": "./lib/commands",
+    "hooks": {
+      "prerun": [
+        "./lib/hooks/init/check-token"
+      ]
+    },
     "bin": "kbc-cli",
     "plugins": [
       "@oclif/plugin-help"
