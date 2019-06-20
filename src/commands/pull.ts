@@ -1,25 +1,30 @@
 import * as fs from "fs";
 import { Command, flags } from "@oclif/command";
 
-import { pull } from "../lib/keboolaHttpApi";
+import { getConfigs } from "../lib/keboolaHttpApi";
+import { AnyARecord } from "dns";
+import { thisExpression } from "@babel/types";
 
 export default class Pull extends Command {
   static description = "pull all transformations and store them locally";
+
+  static args = [{ name: "transformationId" }];
 
   static flags = {
     help: flags.help({ char: "h" }),
     outDir: flags.string({
       char: "o",
       description: "[default: transformations]"
-    })
+    }),
+    all: flags.boolean({ char: "a" })
   };
 
   // @ts-ignore
-  writeToFiles(bucketsWithTransformations) {
-    let transformationCount = 0;
+  writeToFiles(configs) {
+    let writtenCount = 0;
 
     // @ts-ignore
-    bucketsWithTransformations.forEach(bucketConfig => {
+    configs.forEach(bucketConfig => {
       const bucketDir = bucketConfig.name.replace(/\//g, "");
 
       if (!fs.existsSync(bucketDir)) {
@@ -27,7 +32,6 @@ export default class Pull extends Command {
       }
       // @ts-ignore
       bucketConfig.rows.forEach(transformation => {
-        transformationCount++;
         const transformationDir = transformation.name.replace(/\//g, "");
 
         if (!fs.existsSync(`${bucketDir}/${transformationDir}`)) {
@@ -45,6 +49,8 @@ export default class Pull extends Command {
           transformation.configuration.queries.join("\n\n")
         );
 
+        this.log(`* ${bucketDir}/${transformationDir}`);
+
         delete transformation.configuration.queries;
 
         fs.writeFileSync(
@@ -53,6 +59,7 @@ export default class Pull extends Command {
         );
       });
 
+      writtenCount += bucketConfig.rows.length;
       delete bucketConfig.rows;
 
       fs.writeFileSync(
@@ -61,12 +68,12 @@ export default class Pull extends Command {
       );
     });
 
-    return transformationCount;
+    return writtenCount;
   }
 
   async run() {
-    const { flags } = this.parse(Pull);
-    const outDir = flags.outDir || "./transformations";
+    const { flags, args } = this.parse(Pull);
+    const outDir = flags.outDir || "./";
 
     if (!fs.existsSync(outDir)) {
       fs.mkdirSync(outDir);
@@ -74,10 +81,30 @@ export default class Pull extends Command {
 
     process.chdir(outDir);
 
-    // @ts-ignore
-    await pull().then(bucketsWithTransformations => {
-      const transformationCount = this.writeToFiles(bucketsWithTransformations);
-      this.log(`${transformationCount} transformations written to ${outDir}.`);
-    });
+    let configs = await getConfigs();
+
+    if (!flags.all) {
+      if (!args.transformationId) {
+        this.error(
+          "transformation id not provided. Use `kbc-cli ls` to determine it or pull all transformation with `--all`."
+        );
+      }
+
+      for (let bucketConfig of configs) {
+        bucketConfig.rows = bucketConfig.rows.filter(
+          // @ts-ignore
+          transformation => transformation.id === args.transformationId
+        );
+
+        if (bucketConfig.rows.length) {
+          configs = [bucketConfig];
+          break;
+        }
+      }
+    }
+
+    this.log("Writting transformations:\n");
+    const writtenCount = this.writeToFiles(configs);
+    this.log(`\n${writtenCount} transformation(s) written to ${outDir}`);
   }
 }

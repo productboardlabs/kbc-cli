@@ -6,7 +6,7 @@ const headers = {
   "X-Storageapi-Token": process.env["KEBOOLA_TOKEN"]
 };
 
-export const pull = () =>
+export const getConfigs = () =>
   // @ts-ignore
   fetch(keboolaUrl, {
     method: "GET",

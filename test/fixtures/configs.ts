@@ -1,7 +1,7 @@
 export default [
   {
     id: "1",
-    name: "test",
+    name: "test-bucket",
     description: "Test config",
     created: "2016-10-18T15:42:39+0200",
     creatorToken: {
@@ -15,7 +15,7 @@ export default [
     rowsSortOrder: [],
     rows: [
       {
-        id: "210936240",
+        id: "2",
         name: "test",
         description: "out.c-main.team_members_snapshot\n",
         configuration: {
@@ -34,7 +34,7 @@ export default [
           requires: [],
           backend: "snowflake",
           type: "simple",
-          id: "210936240",
+          id: "3",
           phase: 1,
           disabled: false,
           description: ""
