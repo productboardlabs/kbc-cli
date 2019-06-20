@@ -12,7 +12,7 @@
 # Usage
 
 ```sh
-$ npm i productboard/kbc-cli -g
+$ npm i productboardlabs/kbc-cli -g
 $ kbc-cli -h
 $ kbc-cli [COMMAND] --help
 ```
