@@ -22,17 +22,8 @@ export default class Push extends Command {
     }
 
     let codeFile = "queries.sql";
-
     const code = fs.readFileSync(codeFile).toString();
-    const codeAsArray = [];
-
-    const reg = /(.*?;\n*)\n{2}/gs;
-    let match = null;
-    while ((match = reg.exec(code))) {
-      codeAsArray.push(match[1]);
-    }
-
-    transformation.configuration.queries = codeAsArray;
+    transformation.configuration.queries = [code.replace(/\n$/, "")];
 
     const response = await push(bucketConfig.id, transformation);
 
