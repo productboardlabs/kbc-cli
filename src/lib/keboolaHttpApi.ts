@@ -14,8 +14,16 @@ export const getConfigs = () =>
     // @ts-ignore
   }).then(response => response.json());
 
+export const getConfig = (bucketId: number, transformationId: number) =>
+  // @ts-ignore
+  fetch(`${keboolaUrl}/${bucketId}/rows/${transformationId}`, {
+    method: "GET",
+    headers
+    // @ts-ignore
+  }).then(response => response.json());
+
 // @ts-ignore
-export const push = (bucketId, transformation) =>
+export const push = (bucketId: number, transformation) =>
   // @ts-ignore
   fetch(`${keboolaUrl}/${bucketId}/rows/${transformation.id}`, {
     method: "PUT",
