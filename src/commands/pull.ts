@@ -2,109 +2,83 @@ import * as fs from "fs";
 import { Command, flags } from "@oclif/command";
 
 import { getConfigs } from "../lib/keboolaHttpApi";
-import { AnyARecord } from "dns";
-import { thisExpression } from "@babel/types";
+import { store } from "../lib/writter";
+
+interface Context {
+  type: string;
+}
+
+interface BucketConfig {
+  id: number;
+  rows: Array<{}>;
+}
 
 export default class Pull extends Command {
-  static description = "pull all transformations and store them locally";
-
-  static args = [{ name: "transformationId" }];
+  static description = "pull transformations and store them locally";
 
   static flags = {
-    help: flags.help({ char: "h" }),
-    outDir: flags.string({
-      char: "o",
-      description: "[default: transformations]"
-    }),
-    all: flags.boolean({ char: "a" })
+    help: flags.help({ char: "h" })
   };
 
-  // @ts-ignore
-  writeToFiles(configs) {
-    let writtenCount = 0;
-
-    // @ts-ignore
-    configs.forEach(bucketConfig => {
-      const bucketDir = bucketConfig.name.replace(/\//g, "");
-
-      if (!fs.existsSync(bucketDir)) {
-        fs.mkdirSync(bucketDir);
-      }
-      // @ts-ignore
-      bucketConfig.rows.forEach(transformation => {
-        const transformationDir = transformation.name.replace(/\//g, "");
-
-        if (!fs.existsSync(`${bucketDir}/${transformationDir}`)) {
-          fs.mkdirSync(`${bucketDir}/${transformationDir}`);
-        }
-
-        let codeFile = "queries.sql";
-
-        if (transformation.configuration.type === "python") {
-          codeFile = "script.py";
-        }
-
-        fs.writeFileSync(
-          `${bucketDir}/${transformationDir}/${codeFile}`,
-          transformation.configuration.queries.join("\n\n")
-        );
-
-        this.log(`* ${bucketDir}/${transformationDir}`);
-
-        delete transformation.configuration.queries;
-
-        fs.writeFileSync(
-          `${bucketDir}/${transformationDir}/.config`,
-          JSON.stringify(transformation, null, 2)
-        );
-      });
-
-      writtenCount += bucketConfig.rows.length;
-      delete bucketConfig.rows;
-
-      fs.writeFileSync(
-        `${bucketDir}/.config`,
-        JSON.stringify(bucketConfig, null, 2)
-      );
-    });
-
-    return writtenCount;
-  }
-
   async run() {
-    const { flags, args } = this.parse(Pull);
-    const outDir = flags.outDir || "./";
+    let context: Context;
 
-    if (!fs.existsSync(outDir)) {
-      fs.mkdirSync(outDir);
+    if (fs.existsSync(".kbc-cli") || fs.existsSync("../.kbc-cli")) {
+      context = {
+        type: "project"
+      };
+    } else if (fs.existsSync(".bucket-config.json")) {
+      context = {
+        type: "bucket"
+      };
+    } else if (fs.existsSync(".transformation-config.json")) {
+      context = {
+        type: "transformation"
+      };
+    } else {
+      this.error(
+        "No bucket or transformation found in the current working directory"
+      );
+      return;
     }
 
-    process.chdir(outDir);
+    let configs: Array<BucketConfig> = await getConfigs();
 
-    let configs = await getConfigs();
+    if (context.type === "bucket") {
+      const storedBucketConfig = JSON.parse(
+        fs.readFileSync(".bucket-config.json").toString()
+      );
 
-    if (!flags.all) {
-      if (!args.transformationId) {
-        this.error(
-          "transformation id not provided. Use `kbc-cli ls` to determine it or pull all transformation with `--all`."
-        );
-      }
+      configs = configs.filter(
+        bucketConfig => bucketConfig.id === storedBucketConfig.id
+      );
+    }
+
+    if (fs.existsSync(".transformation-config.json")) {
+      const storedTransformationConfig = JSON.parse(
+        fs.readFileSync(".transformation-config.json").toString()
+      );
+
+      // @ts-ignore
+      let filteredConfigs = [];
 
       for (let bucketConfig of configs) {
         bucketConfig.rows = bucketConfig.rows.filter(
           // @ts-ignore
-          transformation => transformation.id === args.transformationId
+          transformation => transformation.id === storedTransformationConfig.id
         );
 
         if (bucketConfig.rows.length) {
-          configs = [bucketConfig];
+          filteredConfigs = [bucketConfig];
           break;
         }
       }
+
+      // @ts-ignore
+      configs = filteredConfigs;
     }
 
-    this.log("Writting transformations:\n");
-    const writtenCount = this.writeToFiles(configs);
-    this.log(`\n${writtenCount} transformation(s) written to ${outDir}`);
+    const writtenCount = store(configs, this);
+    this.log(`\nPulled ${writtenCount} transformation(s)`);
   }
 }
