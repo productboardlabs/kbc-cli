@@ -62,10 +62,12 @@ export const store = (configs, console: console) => {
     writtenCount += bucketConfig.rows.length;
     delete bucketConfig.rows;
 
-    fs.writeFileSync(
-      `${bucketDir}/.bucket-config.json`,
-      JSON.stringify(bucketConfig, null, 2)
-    );
+    if (!fs.existsSync(`${bucketDir}/.bucket-config.json`)) {
+      fs.writeFileSync(
+        `${bucketDir}/.bucket-config.json`,
+        JSON.stringify(bucketConfig, null, 2)
+      );
+    }
   });
 
   process.chdir(INITIAL_PATH);
