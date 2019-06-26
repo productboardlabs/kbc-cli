@@ -14,11 +14,22 @@ export default class Push extends Command {
   async run() {
     const { flags } = this.parse(Push);
 
-    const bucketConfig = JSON.parse(fs.readFileSync("../.config").toString());
-    const transformation = JSON.parse(fs.readFileSync(".config").toString());
+    if (
+      !fs.existsSync("../.bucket-config.json") ||
+      !fs.existsSync(".transformation-config.json")
+    ) {
+      this.error("");
+    }
+
+    const bucketConfig = JSON.parse(
+      fs.readFileSync("../.bucket-config.json").toString()
+    );
+    const transformation = JSON.parse(
+      fs.readFileSync(".transformation-config.json").toString()
+    );
 
     if (transformation.configuration.type !== "simple") {
-      this.error("Only SQL scripts are currently supported.");
+      this.error("Currently only SQL queries are supported.");
     }
 
     let codeFile = "queries.sql";
@@ -30,5 +41,11 @@ export default class Push extends Command {
     if (flags.verbose) {
       this.log(response);
     }
+
+    this.log(
+      `\nTransformation \`${transformation.name}\` (id: ${
+        transformation.id
+      }) pushed`
+    );
   }
 }
