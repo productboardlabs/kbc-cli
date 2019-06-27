@@ -3,20 +3,18 @@
 > command line tool that works with [Keboola Connection (KBC)](https://developers.keboola.com/)
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/kbc-cli.svg)](https://npmjs.org/package/kbc-cli)
-[![Downloads/week](https://img.shields.io/npm/dw/kbc-cli.svg)](https://npmjs.org/package/kbc-cli)
-[![License](https://img.shields.io/npm/l/kbc-cli.svg)](https://github.com/productboard/kbc-cli/blob/master/package.json)
+[![Version](https://img.shields.io/npm/v/kbc-cli.svg)](https://npmjs.org/package/@productboard/kbc-cli)
+[![Downloads/week](https://img.shields.io/npm/dw/kbc-cli.svg)](https://npmjs.org/package/@productboard/kbc-cli)
+[![License](https://img.shields.io/npm/l/kbc-cli.svg)](https://github.com/productboardlabs/kbc-cli/blob/master/package.json)
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
-  <!-- tocstop -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @productboard/kbc-cli
 $ kbc-cli COMMAND
@@ -28,17 +26,15 @@ USAGE
   $ kbc-cli COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`kbc-cli help [COMMAND]`](#kbc-cli-help-command)
-- [`kbc-cli init`](#kbc-cli-init)
-- [`kbc-cli pull`](#kbc-cli-pull)
-- [`kbc-cli push`](#kbc-cli-push)
+* [`kbc-cli help [COMMAND]`](#kbc-cli-help-command)
+* [`kbc-cli init`](#kbc-cli-init)
+* [`kbc-cli pull`](#kbc-cli-pull)
+* [`kbc-cli push`](#kbc-cli-push)
 
 ## `kbc-cli help [COMMAND]`
 
@@ -101,5 +97,4 @@ OPTIONS
 ```
 
 _See code: [src/commands/push.ts](https://github.com/productboardlabs/kbc-cli/blob/v0.0.1/src/commands/push.ts)_
-
 <!-- commandsstop -->
