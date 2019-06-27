@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { Command, flags } from "@oclif/command";
 
-import { getConfigs } from "../lib/keboolaHttpApi";
+import { getTransformations } from "../lib/keboolaHttpApi";
 import { store } from "../lib/writter";
 
 interface Context {
@@ -17,10 +17,15 @@ export default class Pull extends Command {
   static description = "pull transformations and store them locally";
 
   static flags = {
-    help: flags.help({ char: "h" })
+    help: flags.help(),
+    configOnly: flags.boolean({
+      description: "pull only configurations without queries or scripts"
+    })
   };
 
   async run() {
+    const { flags } = this.parse(Pull);
+
     let context: Context;
 
     if (fs.existsSync(".kbc-cli") || fs.existsSync("../.kbc-cli")) {
@@ -37,12 +42,12 @@ export default class Pull extends Command {
       };
     } else {
       this.error(
-        "No bucket or transformation found in the current working directory"
+        "No bucket or transformation found in the current working directory."
       );
       return;
     }
 
-    let configs: Array<BucketConfig> = await getConfigs();
+    let configs: Array<BucketConfig> = await getTransformations();
 
     if (context.type === "bucket") {
       const storedBucketConfig = JSON.parse(
@@ -78,7 +83,7 @@ export default class Pull extends Command {
       configs = filteredConfigs;
     }
 
-    const writtenCount = store(configs, this);
-    this.log(`\nPulled ${writtenCount} transformation(s)`);
+    const writtenCount = store(configs, this, flags.configOnly);
+    this.log(`\nPulled ${writtenCount} transformation(s).`);
   }
 }

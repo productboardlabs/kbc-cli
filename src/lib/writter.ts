@@ -1,7 +1,7 @@
 import * as fs from "fs";
 
 // @ts-ignore
-export const store = (configs, console: console) => {
+export const store = (configs, console = console, configOnly = false) => {
   const INITIAL_PATH = __dirname;
   let maxDepth = 5;
 
@@ -44,10 +44,11 @@ export const store = (configs, console: console) => {
         codeFile = "script.py";
       }
 
-      fs.writeFileSync(
-        `${bucketDir}/${transformationDir}/${codeFile}`,
-        transformation.configuration.queries.join("\n\n")
-      );
+      !configOnly &&
+        fs.writeFileSync(
+          `${bucketDir}/${transformationDir}/${codeFile}`,
+          transformation.configuration.queries.join("\n\n")
+        );
 
       console.log(`* ${bucketDir}/${transformationDir}`);
 

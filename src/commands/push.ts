@@ -1,17 +1,17 @@
 import * as fs from "fs";
 import { Command, flags } from "@oclif/command";
 
-import { push, getConfig } from "../lib/keboolaHttpApi";
+import { pushTransformation, getTransformation } from "../lib/keboolaHttpApi";
 
 export default class Push extends Command {
-  static description = "push transformation to Keboola";
+  static description = "push transformation to KBC";
 
   static flags = {
-    help: flags.help({ char: "h" }),
-    verbose: flags.boolean({ char: "v", description: "print response" }),
-    dryRun: flags.boolean({
-      char: "n",
-      description: "show what would be have been pushed"
+    help: flags.help(),
+    verbose: flags.boolean({ description: "print response from KBC" }),
+    check: flags.boolean({
+      description:
+        "check if local configuration and active KBC configuration do not differ"
     })
   };
 
@@ -28,7 +28,7 @@ export default class Push extends Command {
       !fs.existsSync("../.bucket-config.json") ||
       !fs.existsSync(".transformation-config.json")
     ) {
-      this.error("");
+      this.error("push must be executed in directory with transformation");
     }
 
     const bucketConfig = JSON.parse(
@@ -42,7 +42,7 @@ export default class Push extends Command {
       this.error("Currently only SQL queries are supported.");
     }
 
-    const activeTransformation = await getConfig(
+    const activeTransformation = await getTransformation(
       bucketConfig.id,
       transformation.id
     );
@@ -54,20 +54,24 @@ export default class Push extends Command {
       )
     ) {
       this.error(
-        "Local and active configuration of the pushed transformation differ. Run `kbc-cli pull` first."
+        "Local configuration and active KBC configuration differ.\n\nRun `kbc-cli pull --config-only` to update your local configuration."
       );
     }
 
     let codeFile = "queries.sql";
     const code = fs.readFileSync(codeFile).toString();
-    transformation.configuration.queries = [code.replace(/\n$/, "")];
+    transformation.configuration.queries = [code.replace(/\n$/, " from KBC")];
 
-    if (!flags.dryRun) {
-      const response = await push(bucketConfig.id, transformation);
+    if (flags.check) {
+      this.log(
+        "Local configuration and active KBC configuration are the same."
+      );
+      this.exit(0);
+    }
 
-      if (flags.verbose) {
-        this.log(response);
-      }
+    const response = await pushTransformation(bucketConfig.id, transformation);
+    if (flags.verbose) {
+      this.log(response);
     }
 
     this.log(

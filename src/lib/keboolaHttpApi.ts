@@ -6,7 +6,7 @@ const headers = {
   "X-Storageapi-Token": process.env["KEBOOLA_TOKEN"]
 };
 
-export const getConfigs = () =>
+export const getTransformations = () =>
   // @ts-ignore
   fetch(keboolaUrl, {
     method: "GET",
@@ -14,7 +14,7 @@ export const getConfigs = () =>
     // @ts-ignore
   }).then(response => response.json());
 
-export const getConfig = (bucketId: number, transformationId: number) =>
+export const getTransformation = (bucketId: number, transformationId: number) =>
   // @ts-ignore
   fetch(`${keboolaUrl}/${bucketId}/rows/${transformationId}`, {
     method: "GET",
@@ -23,7 +23,7 @@ export const getConfig = (bucketId: number, transformationId: number) =>
   }).then(response => response.json());
 
 // @ts-ignore
-export const push = (bucketId: number, transformation) =>
+export const pushTransformation = (bucketId: number, transformation) =>
   // @ts-ignore
   fetch(`${keboolaUrl}/${bucketId}/rows/${transformation.id}`, {
     method: "PUT",
