@@ -20,7 +20,7 @@ $ npm install -g @productboard/kbc-cli
 $ kbc-cli COMMAND
 running command...
 $ kbc-cli (-v|--version|version)
-@productboard/kbc-cli/0.0.2 darwin-x64 node-v10.15.3
+@productboard/kbc-cli/0.0.4 darwin-x64 node-v10.15.3
 $ kbc-cli --help [COMMAND]
 USAGE
   $ kbc-cli COMMAND
@@ -65,7 +65,7 @@ OPTIONS
   --help  show CLI help
 ```
 
-_See code: [src/commands/init.ts](https://github.com/productboardlabs/kbc-cli/blob/v0.0.2/src/commands/init.ts)_
+_See code: [src/commands/init.ts](https://github.com/productboardlabs/kbc-cli/blob/v0.0.4/src/commands/init.ts)_
 
 ## `kbc-cli pull`
 
@@ -80,7 +80,7 @@ OPTIONS
   --help        show CLI help
 ```
 
-_See code: [src/commands/pull.ts](https://github.com/productboardlabs/kbc-cli/blob/v0.0.2/src/commands/pull.ts)_
+_See code: [src/commands/pull.ts](https://github.com/productboardlabs/kbc-cli/blob/v0.0.4/src/commands/pull.ts)_
 
 ## `kbc-cli push`
 
@@ -96,5 +96,5 @@ OPTIONS
   --verbose  print response from KBC
 ```
 
-_See code: [src/commands/push.ts](https://github.com/productboardlabs/kbc-cli/blob/v0.0.2/src/commands/push.ts)_
+_See code: [src/commands/push.ts](https://github.com/productboardlabs/kbc-cli/blob/v0.0.4/src/commands/push.ts)_
 <!-- commandsstop -->
