@@ -22,7 +22,7 @@ export default class Init extends Command {
     );
 
     const configs = await getTransformations();
-    const writtenCount = store(configs, this);
+    const writtenCount = store(configs, ".", this);
     this.log(`\nInitialized project with ${writtenCount} transformation(s).`);
   }
 }

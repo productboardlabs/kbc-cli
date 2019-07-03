@@ -1,41 +1,34 @@
 import * as fs from "fs";
 
-// @ts-ignore
-export const store = (configs, console = console, configOnly = false) => {
-  const INITIAL_PATH = __dirname;
-  let maxDepth = 5;
-
-  while (maxDepth) {
-    if (fs.existsSync(".kbc-cli")) {
-      break;
-    }
-
-    process.chdir("../");
-    maxDepth -= 1;
-  }
-
-  if (!maxDepth) {
-    console.error("Project root not found");
-    return;
-  }
-
-  process.chdir("transformations");
+export const store = (
+  // @ts-ignore
+  configs,
+  // @ts-ignore
+  rootPath,
+  // @ts-ignore
+  console = console,
+  configOnly = false
+) => {
+  const basePath = `${rootPath}/transformations`;
 
   let writtenCount = 0;
 
   // @ts-ignore
   configs.forEach(bucketConfig => {
-    const bucketDir = bucketConfig.name.replace(/\//g, "");
+    const bucketDir = `${basePath}/${bucketConfig.name.replace(/\//g, "")}`;
 
     if (!fs.existsSync(bucketDir)) {
       fs.mkdirSync(bucketDir);
     }
     // @ts-ignore
     bucketConfig.rows.forEach(transformation => {
-      const transformationDir = transformation.name.replace(/\//g, "");
+      const transformationDir = `${bucketDir}/${transformation.name.replace(
+        /\//g,
+        ""
+      )}`;
 
-      if (!fs.existsSync(`${bucketDir}/${transformationDir}`)) {
-        fs.mkdirSync(`${bucketDir}/${transformationDir}`);
+      if (!fs.existsSync(transformationDir)) {
+        fs.mkdirSync(transformationDir);
       }
 
       let codeFile = "queries.sql";
@@ -46,32 +39,29 @@ export const store = (configs, console = console, configOnly = false) => {
 
       !configOnly &&
         fs.writeFileSync(
-          `${bucketDir}/${transformationDir}/${codeFile}`,
+          `${transformationDir}/${codeFile}`,
           transformation.configuration.queries.join("\n\n")
         );
 
-      console.log(`* ${bucketDir}/${transformationDir}`);
+      console.log(`* ${transformationDir}`);
 
       delete transformation.configuration.queries;
 
       fs.writeFileSync(
-        `${bucketDir}/${transformationDir}/.transformation-config.json`,
+        `${transformationDir}/.transformation-config.json`,
         JSON.stringify(transformation, null, 2)
       );
     });
 
     writtenCount += bucketConfig.rows.length;
+
     delete bucketConfig.rows;
 
-    if (!fs.existsSync(`${bucketDir}/.bucket-config.json`)) {
-      fs.writeFileSync(
-        `${bucketDir}/.bucket-config.json`,
-        JSON.stringify(bucketConfig, null, 2)
-      );
-    }
+    fs.writeFileSync(
+      `${bucketDir}/.bucket-config.json`,
+      JSON.stringify(bucketConfig, null, 2)
+    );
   });
-
-  process.chdir(INITIAL_PATH);
 
   return writtenCount;
 };
