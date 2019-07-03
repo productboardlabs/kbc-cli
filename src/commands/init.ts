@@ -16,6 +16,11 @@ export default class Init extends Command {
       dir => !fs.existsSync(dir) && fs.mkdirSync(dir)
     );
 
+    fs.writeFileSync(
+      ".kbc-cli/config.json",
+      JSON.stringify({ createdWith: "kbc-cli" })
+    );
+
     const configs = await getTransformations();
     const writtenCount = store(configs, this);
     this.log(`\nInitialized project with ${writtenCount} transformation(s).`);
